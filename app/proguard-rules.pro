@@ -1,2 +1,2 @@
-# Keep Custom Tabs / TWA classes
--keep class androidx.browser.** { *; }
+# keep customtabs
+-keep class androidx.browser.customtabs.** { *; }
