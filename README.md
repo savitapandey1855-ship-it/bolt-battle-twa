@@ -11,6 +11,5 @@ Trusted Web Activity (TWA) wrapper for https://3d-battle-royale-gam-bu8f.bolt.ho
 
 ## Build
 
-The GitHub Actions workflow `.github/workflows/build-apk.yml` builds both debug and release APKs automatically on push to `main`, or can be triggered manually via `workflow_dispatch`.
-
-Download the built APK from the Actions tab -> run -> Artifacts section.
+The GitHub Actions workflow builds both debug and release APKs on push to main, or can be triggered manually.
+Download the built APK from the Actions tab.
