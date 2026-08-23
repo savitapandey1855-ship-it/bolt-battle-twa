@@ -14,10 +14,42 @@ jobs:
           java-version: '17'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-      - name: Build APK
+
+      - name: Generate debug signing keystore
+        run: |
+          keytool -genkeypair \
+            -v \
+            -keystore app/debug.keystore \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=BoltBattle, OU=Dev, O=URL2APK, L=Mumbai, ST=Maharashtra, C=IN"
+
+      - name: Build release APK
         run: gradle assembleRelease --no-daemon
-      - name: Upload APK
+
+      - name: Sign APK with apksigner
+        run: |
+          APKSIGNER=$(find $ANDROID_HOME -name apksigner -type f | head -1)
+          echo "Using apksigner: $APKSIGNER"
+          $APKSIGNER sign \
+            --ks app/debug.keystore \
+            --ks-pass pass:android \
+            --ks-key-alias androiddebugkey \
+            --key-pass pass:android \
+            --out app/build/outputs/apk/release/BoltBattle-signed.apk \
+            app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Verify APK signature
+        run: |
+          APKSIGNER=$(find $ANDROID_HOME -name apksigner -type f | head -1)
+          $APKSIGNER verify --verbose app/build/outputs/apk/release/BoltBattle-signed.apk
+
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
           name: bolt-battle-apk
-          path: app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/release/BoltBattle-signed.apk
